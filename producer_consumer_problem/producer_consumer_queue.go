@@ -1,4 +1,4 @@
-package pcproblem
+package producer_consumer_problem
 
 import (
 	"fmt"
