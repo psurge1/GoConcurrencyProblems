@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
-	"go_producer_consumer/pcproblem"
+	"github.com/psurge1/GoConcurrencyProblems/pcproblem"
 )
 
 func main() {
+	fmt.Printf("Running Go Concurrency Problem Tests\n\n")
 
+	pcproblem.Test()
 }
