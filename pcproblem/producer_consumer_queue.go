@@ -2,6 +2,7 @@ package pcproblem
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -21,6 +22,17 @@ type PCQueue struct {
 	dataId   int
 }
 
+func formatReturnString(tp string, buffer []Data, item Data) string {
+	sb := strings.Builder{}
+	sb.WriteString(fmt.Sprintf("\n%s data: %v\n", tp, item))
+	sb.WriteString(fmt.Sprintf("Queue After %s:\n", tp))
+	for _, el := range buffer {
+		sb.WriteString(fmt.Sprintf("%d ", el.id))
+	}
+	sb.WriteString("\n")
+	return sb.String()
+}
+
 func CreatePCQueue(bufferWidth int) *PCQueue {
 	pcq := &PCQueue{
 		buffer:   make([]Data, bufferWidth),
@@ -38,17 +50,6 @@ func CreatePCQueue(bufferWidth int) *PCQueue {
 }
 
 func (buffer *PCQueue) produce() error {
-	var data Data
-	var queueCopy []Data
-	defer func() {
-		fmt.Printf("\nProduced data: %v\n", data)
-		fmt.Printf("Queue After Production:\n")
-		for _, el := range queueCopy {
-			fmt.Printf("%d ", el.id)
-		}
-		fmt.Println()
-	}()
-
 	buffer.lock.Lock()
 	defer buffer.lock.Unlock()
 
@@ -57,13 +58,15 @@ func (buffer *PCQueue) produce() error {
 	}
 
 	buffer.buffer[buffer.p] = Data{buffer.dataId}
-	data = buffer.buffer[buffer.p]
+	data := buffer.buffer[buffer.p]
 
 	buffer.dataId++
 	buffer.p = (buffer.p + 1) % buffer.capacity
 	buffer.size++
 
-	queueCopy = append([]Data(nil), buffer.buffer...)
+	displayStr := formatReturnString("Produce", buffer.buffer, data)
+	// TODO: Implement channel so IO isn't called inside critical section
+	fmt.Println(displayStr)
 
 	buffer.hasData.Signal()
 
@@ -71,17 +74,6 @@ func (buffer *PCQueue) produce() error {
 }
 
 func (buffer *PCQueue) consume() error {
-	var data Data
-	var queueCopy []Data
-	defer func() {
-		fmt.Printf("\nConsumed data: %v\n", data)
-		fmt.Printf("Queue After Consumption:\n")
-		for _, el := range queueCopy {
-			fmt.Printf("%d ", el.id)
-		}
-		fmt.Println()
-	}()
-
 	buffer.lock.Lock()
 	defer buffer.lock.Unlock()
 
@@ -89,13 +81,15 @@ func (buffer *PCQueue) consume() error {
 		buffer.hasData.Wait()
 	}
 
-	data = buffer.buffer[buffer.c]
+	data := buffer.buffer[buffer.c]
 
 	buffer.buffer[buffer.c].id = 0
 	buffer.c = (buffer.c + 1) % buffer.capacity
 	buffer.size--
 
-	queueCopy = append([]Data(nil), buffer.buffer...)
+	displayStr := formatReturnString("Consume", buffer.buffer, data)
+	// TODO: Implement channel so IO isn't called inside critical section
+	fmt.Println(displayStr)
 
 	buffer.hasSpace.Signal()
 
