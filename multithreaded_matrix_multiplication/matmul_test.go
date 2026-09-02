@@ -1,13 +1,13 @@
-package multithreaded_matrix_multiplication
+package multithreadedmatrixmultiplication
 
 import (
 	"testing"
 )
 
 var (
-	A = 512
-	B = 512
-	C = 512
+	A = 5
+	B = 5
+	C = 5
 )
 
 func BenchmarkMatmul2DIterative(b *testing.B) {

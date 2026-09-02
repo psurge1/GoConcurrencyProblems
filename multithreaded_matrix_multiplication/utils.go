@@ -1,4 +1,4 @@
-package multithreaded_matrix_multiplication
+package multithreadedmatrixmultiplication
 
 import (
 	"math/rand/v2"
