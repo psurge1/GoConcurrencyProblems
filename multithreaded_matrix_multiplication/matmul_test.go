@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	A = 5
-	B = 5
-	C = 5
+	A = 2
+	B = 2
+	C = 2
 )
 
 func BenchmarkMatmul2DIterative(b *testing.B) {
