@@ -28,14 +28,39 @@ package lamportsmutualexclusionalgorithm
 * */
 
 import (
+	"fmt"
 	"sync"
 )
 
 func RunSimulation(N int) {
 	wg := sync.WaitGroup{}
-	processes := InitSystem(N)
+	messages := make(chan string, 1000)
+	processes := InitSystem(N, messages)
+	done := make(chan struct{})
 	for _, proc := range processes {
 		wg.Go(proc.Run)
 	}
-	wg.Wait()
+
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	systemRunning := true
+	for systemRunning {
+		select {
+		case msg := <-messages:
+			fmt.Println(msg)
+		case <-done:
+			systemRunning = false
+		default:
+		}
+	}
+
+	close(messages)
+
+	for msg, ok := <-messages; ok; {
+		fmt.Println(msg)
+		msg, ok = <-messages
+	}
 }

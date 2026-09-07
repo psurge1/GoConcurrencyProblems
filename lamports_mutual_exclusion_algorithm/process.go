@@ -1,8 +1,8 @@
 package lamportsmutualexclusionalgorithm
 
 import (
-	"fmt"
 	"math/rand/v2"
+	"strconv"
 	"time"
 )
 
@@ -17,9 +17,11 @@ type Process struct {
 	N           int
 	AckCount    int
 	CSRequested bool
+
+	Logs chan string
 }
 
-func InitSystem(N int) []*Process {
+func InitSystem(N int, logs chan string) []*Process {
 	processes := make([]*Process, N)
 	channels := make([]chan<- Message, N)
 	for i := range N {
@@ -33,6 +35,7 @@ func InitSystem(N int) []*Process {
 			N,
 			0,
 			false,
+			logs,
 		}
 		channels[i] = pChannel
 	}
@@ -79,11 +82,11 @@ func (p *Process) AttemptReceiveMessage() {
 	if msg.T == Release {
 		popMsg, ok := p.CSPriority.Pop()
 		if !ok {
-			fmt.Println("ERROR STATE: RECIEVED RELEASE MSG, BUT NO PROCESSES IN QUEUE")
+			p.Logs <- "ERROR STATE: RECIEVED RELEASE MSG, BUT NO PROCESSES IN QUEUE"
 		}
 		if msg.Pid != popMsg.Pid {
 			// error state
-			fmt.Println("ERROR STATE: RECIEVED RELEASE MSG FROM WRONG PROCESS")
+			p.Logs <- "ERROR STATE: RECIEVED RELEASE MSG FROM WRONG PROCESS"
 		}
 	}
 	if msg.T == Acknowledge {
@@ -100,9 +103,26 @@ func (p *Process) RequestCS() {
 	p.Clock += 1
 	p.AckCount = 0
 	p.CSRequested = true
+	p.Logs <- "Process " + strconv.Itoa(p.Pid) + " REQUESTING CS at " + strconv.Itoa(p.Clock)
 	msg := Message{p.Pid, p.Clock, Request}
 	for _, peer := range p.Peers {
 		p.SendMessage(msg, peer)
+	}
+}
+
+func (p *Process) ReleaseCS() {
+	p.CSPriority.Pop()
+	p.CSRequested = false
+	p.AckCount = 0
+	p.Logs <- "Process " + strconv.Itoa(p.Pid) + " RELEASING CS at " + strconv.Itoa(p.Clock)
+	for idx, peer := range p.Peers {
+		if idx != p.Pid {
+			p.SendMessage(Message{
+				p.Pid,
+				p.Clock,
+				Release,
+			}, peer)
+		}
 	}
 }
 
@@ -114,18 +134,13 @@ func (p *Process) Run() {
 		if p.CSRequested {
 			if msg, ok := p.CSPriority.Peek(); ok && msg.Pid == p.Pid && p.AckCount == p.N {
 				// enter CS
-				// do some computation
+				p.Logs <- "Process " + strconv.Itoa(p.Pid) + " ENTERING CS"
 
+				// do some computation
 				time.Sleep(1 * time.Second)
 
 				// release CS
-				for _, peer := range p.Peers {
-					p.SendMessage(Message{
-						p.Pid,
-						p.Clock,
-						Release,
-					}, peer)
-				}
+				p.ReleaseCS()
 			}
 		} else {
 			csRequestChance := 20 // percentage
