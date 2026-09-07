@@ -43,6 +43,13 @@ func (mc *MessageCollection) Set(index int, msg Message) {
 	(*mc)[index] = msg
 }
 
+func (mc *MessageCollection) Get(index int) Message {
+	if index >= mc.Len() {
+		return Message{}
+	}
+	return (*mc)[index]
+}
+
 // MessageHeap is a heap implementation supporting messages
 type MessageHeap struct {
 	mc *MessageCollection
@@ -55,11 +62,23 @@ func (mh *MessageHeap) Push(m Message) {
 
 // Pop removes the message at the top of the heap, and adjusts the heap. The second return is the status of the Pop operation, which will be false if the heap was empty.
 func (mh *MessageHeap) Pop() (Message, bool) {
-	if mh.mc.Len() == 0 {
+	if mh.Size() == 0 {
 		return Message{}, false
 	}
 
 	return heap.Pop(mh.mc).(Message), true
+}
+
+// Peek returns the message at the front of the priority queue
+func (mh *MessageHeap) Peek() (Message, bool) {
+	if mh.Size() == 0 {
+		return Message{}, false
+	}
+	return mh.mc.Get(0), true
+}
+
+func (mh *MessageHeap) Size() int {
+	return mh.mc.Len()
 }
 
 // Unused functions, just implemented the wrappers anyway
@@ -71,7 +90,7 @@ func (mh *MessageHeap) Init() {
 
 // ModifyIndex replaces the message at index with msg, and adjusts the heap
 func (mh *MessageHeap) ModifyIndex(index int, msg Message) {
-	if index < mh.mc.Len() {
+	if index < mh.Size() {
 		return
 	}
 
@@ -81,7 +100,7 @@ func (mh *MessageHeap) ModifyIndex(index int, msg Message) {
 
 // Remove removes the message at index, and adjusts the heap
 func (mh *MessageHeap) Remove(index int) (Message, bool) {
-	if index >= mh.mc.Len() {
+	if index >= mh.Size() {
 		return Message{}, false
 	}
 

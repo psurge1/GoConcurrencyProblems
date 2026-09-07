@@ -16,7 +16,13 @@ package lamportsmutualexclusionalgorithm
 * - no faulty processes,
 * - no malicious processes,
 * - etc.
-* All of whicmc are not representative of real world constraints.
+* All of which are not representative of real world constraints.
+*
+* The algorithm is as follows
+* - Whenever a process wants to enter the critical section, it sends a request to all other messages, and adds its request to its internal queue
+* - Whenever it recieves an acknowledgement from all other processes AND is at the front of the queue, it may enter the critical section
+* Implementation
+* - On sending ReqeustCS(cself, pself), add (pself, cself) to priority queue
+* - On recieving RequestCS(ci, pi), add (ci, pi) to our priority queue, respond to pi with acknowledgement
+* - On recieving ReleaseCS(ci, pi), remove pi from our priority queue
 * */
-
-var x = 0
