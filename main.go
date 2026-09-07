@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	_ "net/http/pprof"
+
 	lamport "github.com/psurge1/GoConcurrencyProblems/lamports_mutual_exclusion_algorithm"
 	"github.com/psurge1/GoConcurrencyProblems/lexer"
 	matmul "github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication"
