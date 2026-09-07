@@ -53,6 +53,7 @@ func main() {
 
 	if lamportRun {
 		fmt.Printf("Running Lamport's Mutual Exclusion Algorithm Simulation")
-		lamport.RunSimulation(10)
+		const NumProcesses = 50
+		lamport.RunSimulation(NumProcesses)
 	}
 }

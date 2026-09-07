@@ -3,6 +3,7 @@ package lamportsmutualexclusionalgorithm
 import (
 	"math/rand/v2"
 	"strconv"
+	"sync/atomic"
 	"time"
 )
 
@@ -127,6 +128,7 @@ func (p *Process) ReleaseCS() {
 }
 
 func (p *Process) Run() {
+	numProcessesInCS := atomic.Int32{}
 	for {
 		// p.InternalEvent()
 		p.AttemptReceiveMessage()
@@ -134,10 +136,15 @@ func (p *Process) Run() {
 		if p.CSRequested {
 			if msg, ok := p.CSPriority.Peek(); ok && msg.Pid == p.Pid && p.AckCount == p.N {
 				// enter CS
-				p.Logs <- "Process " + strconv.Itoa(p.Pid) + " ENTERING CS"
+				p.Logs <- "Process " + strconv.Itoa(p.Pid) + " ENTERING CS, original request timestamp: " + strconv.Itoa(msg.Clock)
 
-				// do some computation
+				// ensure only one process exists in the critical section
+				if numProcessesInCS.Add(1) > 1 {
+					p.Logs <- "TOO MANY PROCESSES IN CS"
+				}
+				// do some computation in the CS
 				time.Sleep(1 * time.Second)
+				numProcessesInCS.Add(-1)
 
 				// release CS
 				p.ReleaseCS()
