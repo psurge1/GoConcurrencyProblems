@@ -26,3 +26,16 @@ package lamportsmutualexclusionalgorithm
 * - On recieving RequestCS(ci, pi), add (ci, pi) to our priority queue, respond to pi with acknowledgement
 * - On recieving ReleaseCS(ci, pi), remove pi from our priority queue
 * */
+
+import (
+	"sync"
+)
+
+func RunSimulation(N int) {
+	wg := sync.WaitGroup{}
+	processes := InitSystem(N)
+	for _, proc := range processes {
+		wg.Go(proc.Run)
+	}
+	wg.Wait()
+}

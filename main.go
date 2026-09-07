@@ -3,15 +3,17 @@ package main
 import (
 	"fmt"
 
+	lamport "github.com/psurge1/GoConcurrencyProblems/lamports_mutual_exclusion_algorithm"
 	"github.com/psurge1/GoConcurrencyProblems/lexer"
 	matmul "github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication"
 	"github.com/psurge1/GoConcurrencyProblems/producer_consumer_problem"
 )
 
 var (
-	pcpRun    = false
-	lexRun    = false
-	matmulRun = true
+	pcpRun     = false
+	lexRun     = false
+	matmulRun  = false
+	lamportRun = true
 )
 
 func main() {
@@ -45,5 +47,10 @@ func main() {
 		} else {
 			fmt.Println(err)
 		}
+	}
+
+	if lamportRun {
+		fmt.Printf("Running Lamport's Mutual Exclusion Algorithm Simulation")
+		lamport.RunSimulation(10)
 	}
 }

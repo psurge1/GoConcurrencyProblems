@@ -19,6 +19,29 @@ type Process struct {
 	CSRequested bool
 }
 
+func InitSystem(N int) []*Process {
+	processes := make([]*Process, N)
+	channels := make([]chan<- Message, N)
+	for i := range N {
+		pChannel := make(chan Message, 1000)
+		processes[i] = &Process{
+			i,
+			1,
+			pChannel,
+			make([]chan<- Message, N),
+			NewMessageHeap(),
+			N,
+			0,
+			false,
+		}
+		channels[i] = pChannel
+	}
+	for i := range N {
+		copy(processes[i].Peers, channels)
+	}
+	return processes
+}
+
 func (p *Process) Init() {
 	p.Clock = 1
 	p.Me = make(<-chan Message, 1000)
@@ -32,8 +55,14 @@ func (p *Process) InternalEvent() {
 }
 
 func (p *Process) AttemptReceiveMessage() {
-	msg, ok := <-p.Me
-	if !ok {
+	msg := Message{}
+	msgReceived := false
+	select {
+	case msg = <-p.Me:
+		msgReceived = true
+	default:
+	}
+	if !msgReceived {
 		return
 	}
 

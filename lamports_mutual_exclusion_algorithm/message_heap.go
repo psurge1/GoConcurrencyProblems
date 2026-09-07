@@ -55,6 +55,12 @@ type MessageHeap struct {
 	mc *MessageCollection
 }
 
+func NewMessageHeap() MessageHeap {
+	return MessageHeap{
+		&MessageCollection{},
+	}
+}
+
 // Push pushes a message onto the heap
 func (mh *MessageHeap) Push(m Message) {
 	heap.Push(mh.mc, m)
