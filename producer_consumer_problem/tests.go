@@ -23,7 +23,9 @@ func Test() {
 }
 
 func TestParams(bufferWidth int, numProducers int, numConsumers int) func() {
-	buffer := CreatePCQueue(bufferWidth)
+	logs := make(chan string, 100)
+	done := make(chan struct{})
+	buffer := CreatePCQueue(bufferWidth, logs)
 	wg := sync.WaitGroup{}
 
 	var threads []func() error
@@ -48,6 +50,24 @@ func TestParams(bufferWidth int, numProducers int, numConsumers int) func() {
 				}
 			})
 		}
-		wg.Wait()
+
+		go func() {
+			wg.Wait()
+			close(done)
+		}()
+
+		systemRunning := true
+		for systemRunning {
+			select {
+			case <-done:
+				systemRunning = false
+			case log := <-logs:
+				fmt.Println(log)
+			}
+		}
+
+		for len(logs) > 0 {
+			fmt.Println(<-logs)
+		}
 	}
 }

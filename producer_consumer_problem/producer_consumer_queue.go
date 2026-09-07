@@ -19,7 +19,8 @@ type PCQueue struct {
 	size     int
 	p        int
 	c        int
-	dataId   int
+	dataID   int
+	logs     chan<- string
 }
 
 func formatReturnString(tp string, buffer []Data, item Data) string {
@@ -33,14 +34,15 @@ func formatReturnString(tp string, buffer []Data, item Data) string {
 	return sb.String()
 }
 
-func CreatePCQueue(bufferWidth int) *PCQueue {
+func CreatePCQueue(bufferWidth int, logs chan<- string) *PCQueue {
 	pcq := &PCQueue{
 		buffer:   make([]Data, bufferWidth),
 		capacity: bufferWidth,
 		size:     0,
 		p:        0,
 		c:        0,
-		dataId:   1,
+		dataID:   1,
+		logs:     logs,
 	}
 
 	pcq.hasSpace = sync.NewCond(&pcq.lock)
@@ -57,16 +59,15 @@ func (buffer *PCQueue) produce() error {
 		buffer.hasSpace.Wait()
 	}
 
-	buffer.buffer[buffer.p] = Data{buffer.dataId}
+	buffer.buffer[buffer.p] = Data{buffer.dataID}
 	data := buffer.buffer[buffer.p]
 
-	buffer.dataId++
+	buffer.dataID++
 	buffer.p = (buffer.p + 1) % buffer.capacity
 	buffer.size++
 
 	displayStr := formatReturnString("Produce", buffer.buffer, data)
-	// TODO: Implement channel so IO isn't called inside critical section
-	fmt.Println(displayStr)
+	buffer.logs <- displayStr
 
 	buffer.hasData.Signal()
 
@@ -88,8 +89,7 @@ func (buffer *PCQueue) consume() error {
 	buffer.size--
 
 	displayStr := formatReturnString("Consume", buffer.buffer, data)
-	// TODO: Implement channel so IO isn't called inside critical section
-	fmt.Println(displayStr)
+	buffer.logs <- displayStr
 
 	buffer.hasSpace.Signal()
 

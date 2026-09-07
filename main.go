@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	pcpRun     = false
+	pcpRun     = true
 	lexRun     = false
 	matmulRun  = false
-	lamportRun = true
+	lamportRun = false
 )
 
 func main() {
