@@ -2,34 +2,26 @@
 package ricartagrawalamutualexclusionalgorithm
 
 /*
-* Lamport's mutual exclusion algorithm is a consensus algorithm for a distributed system, only allowing one system in a fully connected network to enter a critical section at a given time.
+* Ricart-Agrawala's mutual exclusion algorithm is a consensus algorithm for a distributed system, only allowing one system in a fully connected network to enter a critical section at a given time.
 * This algorithm abides by the 3 properties of mutual exclusion
 * - Safety: we never enter a bad state / race condition
 * - Lifeliness: progress is eventually made in the system, no deadlocks occur
 * - Fairness: some notion of fairness (ex: no process starves, resource allocation occurs on a rolling basis, etc.)
 *
-* This implementation represents processes as go routines. Messages between processes occur througmc channels.
+* This implementation represents processes as go routines. Messages between processes occur through channels.
 * Thus, this is only a simulation of a distributed system using concurrency.
-* However, its important to keep in mind that Lamport's mutual exclusion algorithm is theoretical in nature,
-* since it assumes FIFO message ordering,
-* - reliable messages,
-* - no faulty processes,
-* - no malicious processes,
-* - etc.
-* All of which are not representative of real world constraints.
+* Ricart-Agrwala's algorithm assumes the following
+* - Complete fault tolerance
+* - All messages reach their final destination
 *
 * The algorithm is as follows
-* - Whenever a process wants to enter the critical section, it sends a request to all other messages, and adds its request to its internal queue
-* - Whenever it recieves an acknowledgement from all other processes AND is at the front of the queue, it may enter the critical section
-* Implementation
-* - On sending ReqeustCS(cself, pself), add (pself, cself) to priority queue
-* - On recieving RequestCS(ci, pi), add (ci, pi) to our priority queue, respond to pi with acknowledgement
-* - On recieving ReleaseCS(ci, pi), remove pi from our priority queue
-*
-* Testing (verified by error logging: processes pass logs to the log channel defined below)
-* - Safety: only one process can enter the critical section
-* - Liveliness: every process that requests the critical section eventually gets access to it
-* - Fairness: processes enter the critical section in order or request time stamp (ordered by the happened before relation)
+* - Send RequestCS(cself, pself) to request permission from all other processes
+* - On receiving RequestCS(ci, pi):
+*	- if pself is in the critical section already, defer responses to received messages (in order of arrival) until we release CS
+*	- if pself doesn't want the critical section, send GrantPermission(cself, pself) to pi
+*	- if pself wants the critical section
+*		- if (cself, pself) < (ci, pi), dont grant permission, defer response after pself enters and leaves the CS
+*		- else, send GrantPermission(cself, pself) to pi
 * */
 
 import (
