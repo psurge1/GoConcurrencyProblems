@@ -96,7 +96,6 @@ func (p *Process) AttemptReceiveMessage() {
 }
 
 func (p *Process) SendMessage(msg Message, peer chan<- Message) {
-	p.Clock += 1
 	peer <- msg
 }
 
@@ -112,6 +111,7 @@ func (p *Process) RequestCS() {
 }
 
 func (p *Process) ReleaseCS() {
+	p.Clock += 1
 	p.CSPriority.Pop()
 	p.CSRequested = false
 	p.AckCount = 0
