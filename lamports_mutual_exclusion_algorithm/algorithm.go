@@ -8,7 +8,7 @@ package lamportsmutualexclusionalgorithm
 * - Lifeliness: progress is eventually made in the system, no deadlocks occur
 * - Fairness: some notion of fairness (ex: no process starves, resource allocation occurs on a rolling basis, etc.)
 *
-* This implementation represents processes as go routines. Messages between processes occur througmc channels.
+* This implementation represents processes as go routines. Messages between processes occur through channels.
 * Thus, this is only a simulation of a distributed system using concurrency.
 * However, its important to keep in mind that Lamport's mutual exclusion algorithm is theoretical in nature,
 * since it assumes FIFO message ordering,
