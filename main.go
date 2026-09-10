@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	pcpRun     = true
+	pcpRun     = false
 	lexRun     = false
-	matmulRun  = false
+	matmulRun  = true
 	lamportRun = false
 )
 
@@ -30,6 +30,7 @@ func main() {
 	}
 
 	if matmulRun {
+		// run benchmark tests from inside the multithreaded_matrix_multiplication directory with go test -bench=.
 		fmt.Printf("Running Matmul Benchmarking\n\n")
 		one := matmul.NewMatrixOptimal[int32](3, 3)
 		two := matmul.NewMatrixOptimal[int32](3, 3)
@@ -44,8 +45,13 @@ func main() {
 		} else {
 			fmt.Println(err)
 		}
-		if multTh, err := matmul.MatmulThreaded(one, two); err == nil {
-			matmul.PrintMatrix(multTh)
+		if multCellTh, err := matmul.MatmulCellThreaded(one, two); err == nil {
+			matmul.PrintMatrix(multCellTh)
+		} else {
+			fmt.Println(err)
+		}
+		if multRowTh, err := matmul.MatmulRowThreaded(one, two); err == nil {
+			matmul.PrintMatrix(multRowTh)
 		} else {
 			fmt.Println(err)
 		}
