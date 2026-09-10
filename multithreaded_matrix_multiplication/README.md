@@ -62,9 +62,9 @@ goos: darwin
 goarch: arm64
 pkg: github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication
 cpu: Apple M1 Pro
-BenchmarkMatmul/Optimal/Iterative-10         	       8	 126309208 ns/op
-BenchmarkMatmul/Optimal/CellThreaded-10      	      30	  40441386 ns/op
-BenchmarkMatmul/Optimal/RowThreaded-10       	      74	  18236456 ns/op
+BenchmarkMatmul/Optimal/Iterative-10                          	       8	 126309208 ns/op
+BenchmarkMatmul/Optimal/CellThreaded-10                       	      30	  40441386 ns/op
+BenchmarkMatmul/Optimal/RowThreaded-10                        	      74	  18236456 ns/op
 BenchmarkMatmul/Optimal/IterativeNoLoopInterchange-10         	       8	 136306552 ns/op
 BenchmarkMatmul/Optimal/CellThreadedNoLoopInterchange-10      	      32	  36227378 ns/op
 BenchmarkMatmul/Optimal/RowThreadedNoLoopInterchange-10       	      67	  18473001 ns/op
@@ -82,9 +82,9 @@ goos: darwin
 goarch: arm64
 pkg: github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication
 cpu: Apple M1 Pro
-BenchmarkMatmul/Optimal/Iterative-10         	       8	 125904932 ns/op
-BenchmarkMatmul/Optimal/CellThreaded-10      	      28	  38022156 ns/op
-BenchmarkMatmul/Optimal/RowThreaded-10       	      79	  16665928 ns/op
+BenchmarkMatmul/Optimal/Iterative-10                          	       8	 125904932 ns/op
+BenchmarkMatmul/Optimal/CellThreaded-10                       	      28	  38022156 ns/op
+BenchmarkMatmul/Optimal/RowThreaded-10                        	      79	  16665928 ns/op
 BenchmarkMatmul/Optimal/IterativeNoLoopInterchange-10         	      14	  77977631 ns/op
 BenchmarkMatmul/Optimal/CellThreadedNoLoopInterchange-10      	      38	  30520800 ns/op
 BenchmarkMatmul/Optimal/RowThreadedNoLoopInterchange-10       	      96	  10607233 ns/op
