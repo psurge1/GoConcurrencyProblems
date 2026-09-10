@@ -14,6 +14,27 @@ import (
 	"sync"
 )
 
+func MatmulIterativeNoLoopInterchange[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
+	if one.Columns() != two.Rows() {
+		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
+	}
+
+	result := one.NewEmpty(one.Rows(), two.Columns())
+
+	vectorHeight := one.Columns()
+	for i := range result.Rows() {
+		for j := range result.Columns() {
+			res := T(0)
+			for k := range vectorHeight {
+				res += one.Get(i, k) * two.Get(k, j)
+			}
+			result.Set(i, j, res)
+		}
+	}
+
+	return result, nil
+}
+
 func MatmulIterative[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
 	if one.Columns() != two.Rows() {
 		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
@@ -33,7 +54,7 @@ func MatmulIterative[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) 
 	return result, nil
 }
 
-func MatmulThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
+func MatmulCellThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
 	if one.Columns() != two.Rows() {
 		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
 	}
@@ -59,7 +80,7 @@ func MatmulThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
 	return result, nil
 }
 
-func MatmulThreadedRows[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
+func MatmulRowThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
 	if one.Columns() != two.Rows() {
 		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
 	}

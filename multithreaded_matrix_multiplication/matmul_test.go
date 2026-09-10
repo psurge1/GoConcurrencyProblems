@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	A = 2
-	B = 2
-	C = 2
+	A = 256
+	B = 256
+	C = 256
 )
 
 func BenchmarkMatmul2DIterative(b *testing.B) {
@@ -23,7 +23,7 @@ func BenchmarkMatmul2DIterative(b *testing.B) {
 	}
 }
 
-func BenchmarkMatmul2DThreaded(b *testing.B) {
+func BenchmarkMatmul2DCellThreaded(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 		one := NewMatrix2D[int32](A, B)
@@ -32,11 +32,11 @@ func BenchmarkMatmul2DThreaded(b *testing.B) {
 		RandomizeMatrix(two)
 		b.StartTimer()
 
-		MatmulThreaded(one, two)
+		MatmulCellThreaded(one, two)
 	}
 }
 
-func BenchmarkMatmul2DThreadedRows(b *testing.B) {
+func BenchmarkMatmul2DRowThreaded(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 		one := NewMatrix2D[int32](A, B)
@@ -45,7 +45,7 @@ func BenchmarkMatmul2DThreadedRows(b *testing.B) {
 		RandomizeMatrix(two)
 		b.StartTimer()
 
-		MatmulThreadedRows(one, two)
+		MatmulRowThreaded(one, two)
 	}
 }
 
@@ -62,7 +62,7 @@ func BenchmarkMatmulOptimalIterative(b *testing.B) {
 	}
 }
 
-func BenchmarkMatmulOptimalThreaded(b *testing.B) {
+func BenchmarkMatmulOptimalCellThreaded(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 		one := NewMatrixOptimal[int32](A, B)
@@ -71,11 +71,11 @@ func BenchmarkMatmulOptimalThreaded(b *testing.B) {
 		RandomizeMatrix(two)
 		b.StartTimer()
 
-		MatmulThreaded(one, two)
+		MatmulCellThreaded(one, two)
 	}
 }
 
-func BenchmarkMatmulOptimalThreadedRows(b *testing.B) {
+func BenchmarkMatmulOptimalRowThreaded(b *testing.B) {
 	for b.Loop() {
 		b.StopTimer()
 		one := NewMatrixOptimal[int32](A, B)
@@ -84,6 +84,19 @@ func BenchmarkMatmulOptimalThreadedRows(b *testing.B) {
 		RandomizeMatrix(two)
 		b.StartTimer()
 
-		MatmulThreadedRows(one, two)
+		MatmulRowThreaded(one, two)
+	}
+}
+
+func BenchmarkMatmulOptimalIterativeNoLoopInterchange(b *testing.B) {
+	for b.Loop() {
+		b.StopTimer()
+		one := NewMatrixOptimal[int32](A, B)
+		two := NewMatrixOptimal[int32](B, C)
+		RandomizeMatrix(one)
+		RandomizeMatrix(two)
+		b.StartTimer()
+
+		MatmulIterativeNoLoopInterchange(one, two)
 	}
 }
