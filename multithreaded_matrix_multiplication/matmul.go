@@ -24,9 +24,11 @@ func MatmulIterativeNoLoopInterchange[T Number](one Matrix[T], two Matrix[T]) (M
 	vectorHeight := one.Columns()
 	for i := range result.Rows() {
 		for j := range result.Columns() {
+			res := T(0)
 			for k := range vectorHeight {
-				result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
+				res += one.Get(i, k) * two.Get(k, j)
 			}
+			result.Set(i, j, res)
 		}
 	}
 
@@ -66,9 +68,11 @@ func MatmulCellThreadedNoLoopInterchange[T Number](one Matrix[T], two Matrix[T])
 			wg.Add(1)
 			go func(i int) {
 				defer wg.Done()
+				res := T(0)
 				for k := range vectorHeight {
-					result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
+					res += one.Get(i, k) * two.Get(k, j)
 				}
+				result.Set(i, j, res)
 			}(i)
 		}
 	}
@@ -118,9 +122,11 @@ func MatmulRowThreadedNoLoopInterchange[T Number](one Matrix[T], two Matrix[T]) 
 		go func(i int) {
 			defer wg.Done()
 			for j := range result.Columns() {
+				res := T(0)
 				for k := range vectorHeight {
-					result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
+					res += one.Get(i, k) * two.Get(k, j)
 				}
+				result.Set(i, j, res)
 			}
 		}(i)
 	}
