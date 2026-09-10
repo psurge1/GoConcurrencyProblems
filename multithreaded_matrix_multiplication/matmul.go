@@ -45,11 +45,39 @@ func MatmulIterative[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) 
 	vectorHeight := one.Columns()
 	for i := range result.Rows() {
 		for k := range vectorHeight {
-			for j := range two.Columns() {
+			for j := range result.Columns() {
 				result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
 			}
 		}
 	}
+
+	return result, nil
+}
+
+func MatmulCellThreadedNoLoopInterchange[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
+	if one.Columns() != two.Rows() {
+		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
+	}
+
+	result := one.NewEmpty(one.Rows(), two.Columns())
+
+	wg := sync.WaitGroup{}
+	vectorHeight := one.Columns()
+	for i := range result.Rows() {
+		for j := range result.Columns() {
+			wg.Add(1)
+			go func(i int) {
+				defer wg.Done()
+				res := T(0)
+				for k := range vectorHeight {
+					res += result.Get(i, j) + one.Get(i, k)*two.Get(k, j)
+				}
+				result.Set(i, j, res)
+			}(i)
+		}
+	}
+
+	wg.Wait()
 
 	return result, nil
 }
@@ -63,20 +91,47 @@ func MatmulCellThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], erro
 
 	wg := sync.WaitGroup{}
 	vectorHeight := one.Columns()
-	for i := range one.Rows() {
+	for i := range result.Rows() {
 		for k := range vectorHeight {
 			wg.Add(1)
-			go func(row int) {
+			go func(i int, k int) {
 				defer wg.Done()
-				for j := range two.Columns() {
-					result.Set(row, j, result.Get(row, j)+one.Get(row, k)*two.Get(k, j))
+				for j := range result.Columns() {
+					result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
 				}
-			}(i)
+			}(i, k)
 		}
 	}
 
 	wg.Wait()
 
+	return result, nil
+}
+
+func MatmulRowThreadedNoLoopInterchange[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error) {
+	if one.Columns() != two.Rows() {
+		return one.NewEmpty(0, 0), fmt.Errorf("invalid multiplication: dimensionality")
+	}
+
+	result := one.NewEmpty(one.Rows(), two.Columns())
+
+	wg := sync.WaitGroup{}
+	vectorHeight := one.Columns()
+	for i := range result.Rows() {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			for j := range result.Columns() {
+				res := T(0)
+				for k := range vectorHeight {
+					res += result.Get(i, j) + one.Get(i, k)*two.Get(k, j)
+				}
+				result.Set(i, j, res)
+			}
+		}(i)
+	}
+
+	wg.Wait()
 	return result, nil
 }
 
@@ -91,11 +146,11 @@ func MatmulRowThreaded[T Number](one Matrix[T], two Matrix[T]) (Matrix[T], error
 	vectorHeight := one.Columns()
 	for i := range one.Rows() {
 		wg.Add(1)
-		go func(row int) {
+		go func(i int) {
 			defer wg.Done()
 			for k := range vectorHeight {
 				for j := range two.Columns() {
-					result.Set(row, j, result.Get(row, j)+one.Get(row, k)*two.Get(k, j))
+					result.Set(i, j, result.Get(i, j)+one.Get(i, k)*two.Get(k, j))
 				}
 			}
 		}(i)
