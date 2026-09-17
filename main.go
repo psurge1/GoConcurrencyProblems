@@ -27,10 +27,13 @@ func main() {
 	}
 
 	if compilerRun {
-		fmt.Printf("Running Lexer\n\n")
+		fmt.Printf("Running Token Test\n")
+		compilersteps.TestToken()
+
+		fmt.Printf("\nRunning Lexer\n")
 		compilersteps.TestLexer()
 
-		fmt.Printf("Running Parser\n\n")
+		fmt.Printf("\nRunning Parser\n")
 		compilersteps.TestParser()
 	}
 

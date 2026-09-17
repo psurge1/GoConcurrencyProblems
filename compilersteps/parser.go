@@ -4,39 +4,6 @@ import (
 	"fmt"
 )
 
-type (
-	Node  interface{}
-	SNode interface{}
-	LNode interface{}
-)
-
-type IfNode struct {
-	e  ENode
-	s1 SNode
-	s2 SNode
-}
-
-type BeginNode struct {
-	s SNode
-	l LNode
-}
-
-type PrintNode struct {
-	e ENode
-}
-
-type LEndNode struct{}
-
-type LSemicolonNode struct {
-	s SNode
-	l LNode
-}
-
-type ENode struct {
-	left  int
-	right int
-}
-
 /*
 * S -> if E then S else S
 * S -> begin S L
@@ -61,11 +28,11 @@ func (rd *RD) Next() Token {
 	return Token{}
 }
 
-func (rd *RD) S() (*SNode, error) {
+func (rd *RD) S() (SNode, error) {
 	tk := rd.Next()
 	switch tk.Kind {
 	case IF:
-		_, err := rd.E()
+		e, err := rd.E()
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +40,7 @@ func (rd *RD) S() (*SNode, error) {
 		if nextTk.Kind != THEN {
 			return nil, rd.Error(nextTk)
 		}
-		_, err = rd.S()
+		sOne, err := rd.S()
 		if err != nil {
 			return nil, err
 		}
@@ -81,64 +48,63 @@ func (rd *RD) S() (*SNode, error) {
 		if nextTk.Kind != ELSE {
 			return nil, rd.Error(nextTk)
 		}
-		_, err = rd.S()
+		sTwo, err := rd.S()
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return &IfNode{e, sOne, sTwo}, nil
 	case BEGIN:
-		_, err := rd.S()
+		s, err := rd.S()
 		if err != nil {
 			return nil, err
 		}
-		_, err = rd.L()
+		l, err := rd.L()
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return &BeginNode{s, l}, nil
 	case PRINT:
-		_, err := rd.E()
+		e, err := rd.E()
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return &PrintNode{e}, nil
 	}
 	return nil, rd.Error(tk)
 }
 
-func (rd *RD) L() (*LNode, error) {
+func (rd *RD) L() (LNode, error) {
 	tk := rd.Next()
 	if tk.Kind == END {
-		// todo
-		return nil, nil
+		return &LEndNode{}, nil
 	} else if tk.Kind == SEMICOLON {
-		_, err := rd.S()
+		s, err := rd.S()
 		if err != nil {
 			return nil, err
 		}
-		_, err = rd.L()
+		l, err := rd.L()
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return &LSemicolonNode{s, l}, nil
 	}
 	return nil, rd.Error(tk)
 }
 
-func (rd *RD) E() (*ENode, error) {
-	tk := rd.Next()
-	if tk.Kind == NUM {
-		return nil, nil
+func (rd *RD) E() (ENode, error) {
+	tkOne := rd.Next()
+	if tkOne.Kind == NUM {
+		tkTwo := rd.Next()
+		if tkTwo.Kind == EQ {
+			tkThree := rd.Next()
+			if tkThree.Kind == NUM {
+				return &EGeneralNode{tkOne.Value, tkThree.Value}, nil
+			}
+			return nil, rd.Error(tkThree)
+		}
+		return nil, rd.Error(tkTwo)
 	}
-	tk = rd.Next()
-	if tk.Kind == EQ {
-		return nil, nil
-	}
-	tk = rd.Next()
-	if tk.Kind == NUM {
-		return nil, nil
-	}
-	return nil, rd.Error(tk)
+	return nil, rd.Error(tkOne)
 }
 
 func TestParser() {

@@ -43,11 +43,40 @@ func (k Kind) String() string {
 	}
 }
 
+type Value interface {
+	ValueString() string
+}
+
+type (
+	IntValue    int
+	StringValue string
+)
+
+func (v IntValue) ValueString() string {
+	return fmt.Sprintf("%d", v)
+}
+
+func (v StringValue) ValueString() string {
+	return fmt.Sprintf("%s", v)
+}
+
 type Token struct {
 	Kind  Kind
-	Value string
+	Value Value
 }
 
 func (tk *Token) String() string {
-	return fmt.Sprintf("<%s : %s>", tk.Kind.String(), tk.Value)
+	kind := tk.Kind.String()
+	value := "uninitialized"
+	if tk.Value != nil {
+		value = tk.Value.ValueString()
+	}
+	return fmt.Sprintf("<%s : %s>", kind, value)
+}
+
+func TestToken() {
+	tk := Token{NUM, IntValue(10)}
+	tkTwo := Token{EQ, StringValue("=")}
+	fmt.Println(tk.String())
+	fmt.Println(tkTwo.String())
 }

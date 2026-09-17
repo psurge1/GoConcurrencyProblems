@@ -44,9 +44,9 @@ func TestRegexToDFA() {
 func TestTokenizer() {
 }
 
-func TestRegex() {
+func TestLexer() {
 	fmt.Println("Running Basic Regex as DFA:")
-	fmt.Println("Testing regex matching for a|bax*")
+	fmt.Println("	Testing regex matching for a|bax*")
 
 	matchingStrings := []string{
 		"aa",
