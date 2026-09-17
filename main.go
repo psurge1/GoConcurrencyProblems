@@ -5,17 +5,19 @@ import (
 
 	_ "net/http/pprof"
 
+	"github.com/psurge1/GoConcurrencyProblems/compilersteps"
 	lamport "github.com/psurge1/GoConcurrencyProblems/lamports_mutual_exclusion_algorithm"
-	"github.com/psurge1/GoConcurrencyProblems/lexer"
 	matmul "github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication"
 	"github.com/psurge1/GoConcurrencyProblems/producer_consumer_problem"
+	sandbox "github.com/psurge1/GoConcurrencyProblems/sandbox"
 )
 
 var (
-	pcpRun     = false
-	lexRun     = false
-	matmulRun  = true
-	lamportRun = false
+	pcpRun      = false
+	compilerRun = true
+	matmulRun   = false
+	lamportRun  = false
+	sandBox     = false
 )
 
 func main() {
@@ -24,9 +26,12 @@ func main() {
 		producer_consumer_problem.Test()
 	}
 
-	if lexRun {
+	if compilerRun {
 		fmt.Printf("Running Lexer\n\n")
-		lexer.Test()
+		compilersteps.TestLexer()
+
+		fmt.Printf("Running Parser\n\n")
+		compilersteps.TestParser()
 	}
 
 	if matmulRun {
@@ -61,5 +66,13 @@ func main() {
 		fmt.Printf("Running Lamport's Mutual Exclusion Algorithm Simulation")
 		const NumProcesses = 50
 		lamport.RunSimulation(NumProcesses)
+	}
+
+	if sandBox {
+		value := sandbox.T(10)
+		fmt.Printf("%d\n", value)
+		value.Mutate(15)
+		fmt.Printf("Value Mutated!\n")
+		fmt.Printf("%d\n", value)
 	}
 }

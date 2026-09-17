@@ -1,4 +1,5 @@
-package lexer
+// Package compilersteps contains code related to lexing (tokenization), parsing (ast generation), and other steps in the compilation process
+package compilersteps
 
 import (
 	"fmt"
@@ -28,7 +29,22 @@ func ManualRegexDFA(text string) bool {
 	return currState == finalState
 }
 
-func Test() {
+func RegexToDFA(regex string) map[int]map[rune]int {
+	// regex -> NFA -> DFA
+	return nil
+}
+
+func Tokenizer() {
+	// given regex expressions and a input string, create a list of tokens
+}
+
+func TestRegexToDFA() {
+}
+
+func TestTokenizer() {
+}
+
+func TestRegex() {
 	fmt.Println("Running Basic Regex as DFA:")
 	fmt.Println("Testing regex matching for a|bax*")
 
