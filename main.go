@@ -77,5 +77,11 @@ func main() {
 		value.Mutate(15)
 		fmt.Printf("Value Mutated!\n")
 		fmt.Printf("%d\n", value)
+		fmt.Printf("address: %v", &value)
+
+		fmt.Println("\nTesting Struct Printing")
+		node := compilersteps.IfNode{nil, nil, nil}
+		fmt.Printf("%+v\n", node)
+		fmt.Printf("%#v\n", node)
 	}
 }

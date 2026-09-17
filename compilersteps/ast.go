@@ -1,9 +1,16 @@
 package compilersteps
 
+import (
+	"fmt"
+)
+
+type Visitor struct{}
+
 type (
 	Node interface {
 		node()
 	}
+
 	SNode interface {
 		Node
 		sNode()
@@ -17,6 +24,10 @@ type (
 		eNode()
 	}
 )
+
+func NodeString(n Node) string {
+	return fmt.Sprintf("%+v", n)
+}
 
 type IfNode struct {
 	E  ENode

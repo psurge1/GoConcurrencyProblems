@@ -21,7 +21,7 @@ func NewRD() RD {
 }
 
 func (rd *RD) Error(tk Token) error {
-	return fmt.Errorf("syntax error: %s", tk.String())
+	return fmt.Errorf("syntax error on token: %s", tk.String())
 }
 
 func (rd *RD) Next() Token {
@@ -109,5 +109,13 @@ func (rd *RD) E() (ENode, error) {
 
 func TestParser() {
 	rd := NewRD()
-	rd.S()
+	tree, err := rd.S()
+	fmt.Println(NodeString(tree))
+
+	if err == nil {
+		fmt.Println(NodeString(tree))
+		//Accept(tree)
+	} else {
+		fmt.Println(err)
+	}
 }
