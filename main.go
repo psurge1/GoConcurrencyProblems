@@ -6,18 +6,23 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/psurge1/GoConcurrencyProblems/compilersteps"
-	lamport "github.com/psurge1/GoConcurrencyProblems/lamports_mutual_exclusion_algorithm"
+	lamport "github.com/psurge1/GoConcurrencyProblems/distributed/lamports_mutual_exclusion_algorithm"
 	matmul "github.com/psurge1/GoConcurrencyProblems/multithreaded_matrix_multiplication"
 	"github.com/psurge1/GoConcurrencyProblems/producer_consumer_problem"
 	sandbox "github.com/psurge1/GoConcurrencyProblems/sandbox"
 )
 
 var (
-	pcpRun      = false
-	compilerRun = true
-	matmulRun   = false
-	lamportRun  = false
-	sandBox     = false
+	pcpRun            = false
+	compilerRun       = false
+	matmulRun         = false
+	lamportRun        = true
+	ricantAgrawalaRun = false
+	globalSnapshotRun = false
+	leaderElectionRun = false
+	quorumRun         = false
+	spanningTreeRun   = false
+	sandBox           = false
 )
 
 func main() {
