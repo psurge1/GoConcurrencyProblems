@@ -139,8 +139,8 @@ func TestParser() {
 	tree, err := rd.S()
 
 	if err == nil {
-		DFSParser(tree)
-		//Accept(tree)
+		sem := &SemanticAnalyzer{}
+		tree.Accept(sem)
 	} else {
 		fmt.Println(err)
 	}

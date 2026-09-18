@@ -4,15 +4,6 @@ import (
 	"fmt"
 )
 
-type Visitor interface {
-	VisitSIf(*SIfNode)
-	VisitSBegin(*SBeginNode)
-	VisitSPrint(*SPrintNode)
-	VisitLEnd(*LEndNode)
-	VisitLSemicolon(*LSemicolonNode)
-	VisitEGeneral(*EGeneralNode)
-}
-
 type (
 	Node interface {
 		node()
@@ -102,24 +93,4 @@ func (n *LSemicolonNode) Accept(v Visitor) {
 
 func (n *EGeneralNode) Accept(v Visitor) {
 	v.VisitEGeneral(n)
-}
-
-func DFSParser(n Node) {
-	fmt.Println(NodeString(n))
-	switch node := n.(type) {
-	case *SIfNode:
-		DFSParser(node.E)
-		DFSParser(node.S1)
-		DFSParser(node.S2)
-	case *SBeginNode:
-		DFSParser(node.S)
-		DFSParser(node.L)
-	case *SPrintNode:
-		DFSParser(node.E)
-	case *LEndNode:
-	case *LSemicolonNode:
-		DFSParser(node.S)
-		DFSParser(node.L)
-	case *EGeneralNode:
-	}
 }
