@@ -4,11 +4,19 @@ import (
 	"fmt"
 )
 
-type Visitor struct{}
+type Visitor interface {
+	VisitSIf(*SIfNode)
+	VisitSBegin(*SBeginNode)
+	VisitSPrint(*SPrintNode)
+	VisitLEnd(*LEndNode)
+	VisitLSemicolon(*LSemicolonNode)
+	VisitEGeneral(*EGeneralNode)
+}
 
 type (
 	Node interface {
 		node()
+		Accept(Visitor)
 	}
 
 	SNode interface {
@@ -26,21 +34,21 @@ type (
 )
 
 func NodeString(n Node) string {
-	return fmt.Sprintf("%+v", n)
+	return fmt.Sprintf("%#v", n)
 }
 
-type IfNode struct {
+type SIfNode struct {
 	E  ENode
 	S1 SNode
 	S2 SNode
 }
 
-type BeginNode struct {
+type SBeginNode struct {
 	S SNode
 	L LNode
 }
 
-type PrintNode struct {
+type SPrintNode struct {
 	E ENode
 }
 
@@ -56,18 +64,62 @@ type EGeneralNode struct {
 	Right Value
 }
 
-func (*IfNode) node()         {}
-func (*BeginNode) node()      {}
-func (*PrintNode) node()      {}
+func (*SIfNode) node()        {}
+func (*SBeginNode) node()     {}
+func (*SPrintNode) node()     {}
 func (*LEndNode) node()       {}
 func (*LSemicolonNode) node() {}
 func (*EGeneralNode) node()   {}
 
-func (*IfNode) sNode()    {}
-func (*BeginNode) sNode() {}
-func (*PrintNode) sNode() {}
+func (*SIfNode) sNode()    {}
+func (*SBeginNode) sNode() {}
+func (*SPrintNode) sNode() {}
 
 func (*LEndNode) lNode()       {}
 func (*LSemicolonNode) lNode() {}
 
 func (*EGeneralNode) eNode() {}
+
+func (n *SIfNode) Accept(v Visitor) {
+	v.VisitSIf(n)
+}
+
+func (n *SBeginNode) Accept(v Visitor) {
+	v.VisitSBegin(n)
+}
+
+func (n *SPrintNode) Accept(v Visitor) {
+	v.VisitSPrint(n)
+}
+
+func (n *LEndNode) Accept(v Visitor) {
+	v.VisitLEnd(n)
+}
+
+func (n *LSemicolonNode) Accept(v Visitor) {
+	v.VisitLSemicolon(n)
+}
+
+func (n *EGeneralNode) Accept(v Visitor) {
+	v.VisitEGeneral(n)
+}
+
+func DFSParser(n Node) {
+	fmt.Println(NodeString(n))
+	switch node := n.(type) {
+	case *SIfNode:
+		DFSParser(node.E)
+		DFSParser(node.S1)
+		DFSParser(node.S2)
+	case *SBeginNode:
+		DFSParser(node.S)
+		DFSParser(node.L)
+	case *SPrintNode:
+		DFSParser(node.E)
+	case *LEndNode:
+	case *LSemicolonNode:
+		DFSParser(node.S)
+		DFSParser(node.L)
+	case *EGeneralNode:
+	}
+}

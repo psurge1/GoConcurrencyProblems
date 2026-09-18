@@ -14,10 +14,14 @@ import (
 * */
 
 // RD is an implementation of the LL(1) CFG above
-type RD struct{}
+type RD struct {
+	tokens    []Token
+	idx       int
+	numTokens int
+}
 
-func NewRD() RD {
-	return RD{}
+func NewRD(tokens []Token) RD {
+	return RD{tokens, 0, len(tokens)}
 }
 
 func (rd *RD) Error(tk Token) error {
@@ -25,7 +29,12 @@ func (rd *RD) Error(tk Token) error {
 }
 
 func (rd *RD) Next() Token {
-	return Token{}
+	if rd.idx >= rd.numTokens {
+		return Token{}
+	}
+	tk := rd.tokens[rd.idx]
+	rd.idx += 1
+	return tk
 }
 
 func (rd *RD) S() (SNode, error) {
@@ -52,7 +61,7 @@ func (rd *RD) S() (SNode, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &IfNode{e, sOne, sTwo}, nil
+		return &SIfNode{e, sOne, sTwo}, nil
 	case BEGIN:
 		s, err := rd.S()
 		if err != nil {
@@ -62,13 +71,13 @@ func (rd *RD) S() (SNode, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &BeginNode{s, l}, nil
+		return &SBeginNode{s, l}, nil
 	case PRINT:
 		e, err := rd.E()
 		if err != nil {
 			return nil, err
 		}
-		return &PrintNode{e}, nil
+		return &SPrintNode{e}, nil
 	}
 	return nil, rd.Error(tk)
 }
@@ -108,12 +117,29 @@ func (rd *RD) E() (ENode, error) {
 }
 
 func TestParser() {
-	rd := NewRD()
+	tokens := []Token{
+		{BEGIN, nil},
+		{IF, nil},
+		{NUM, IntValue(5)},
+		{EQ, nil},
+		{NUM, IntValue(5)},
+		{THEN, nil},
+		{PRINT, nil},
+		{NUM, IntValue(5)},
+		{EQ, nil},
+		{NUM, IntValue(5)},
+		{ELSE, nil},
+		{PRINT, nil},
+		{NUM, IntValue(10)},
+		{EQ, nil},
+		{NUM, IntValue(10)},
+		{END, nil},
+	}
+	rd := NewRD(tokens)
 	tree, err := rd.S()
-	fmt.Println(NodeString(tree))
 
 	if err == nil {
-		fmt.Println(NodeString(tree))
+		DFSParser(tree)
 		//Accept(tree)
 	} else {
 		fmt.Println(err)

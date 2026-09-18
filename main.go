@@ -80,7 +80,7 @@ func main() {
 		fmt.Printf("address: %v", &value)
 
 		fmt.Println("\nTesting Struct Printing")
-		node := compilersteps.IfNode{nil, nil, nil}
+		node := compilersteps.SIfNode{nil, nil, nil}
 		fmt.Printf("%+v\n", node)
 		fmt.Printf("%#v\n", node)
 	}
