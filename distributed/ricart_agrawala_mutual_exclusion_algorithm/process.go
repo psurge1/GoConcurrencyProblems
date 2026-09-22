@@ -38,6 +38,11 @@ type Process struct {
 	Logs chan string
 }
 
+func (p *Process) Run() {
+	for {
+	}
+}
+
 func InitSystem(N int, logs chan string) []*Process {
 	processes := make([]*Process, N)
 	channels := make([]chan<- Message, N)
