@@ -73,19 +73,14 @@ func (*EGeneralNode) eNode() {}
 
 func (n *SIfNode) Accept(v Visitor) {
 	v.VisitSIf(n)
-	n.E.Accept(v)
-	n.S1.Accept(v)
 }
 
 func (n *SBeginNode) Accept(v Visitor) {
 	v.VisitSBegin(n)
-	n.S.Accept(v)
-	n.L.Accept(v)
 }
 
 func (n *SPrintNode) Accept(v Visitor) {
 	v.VisitSPrint(n)
-	n.E.Accept(v)
 }
 
 func (n *LEndNode) Accept(v Visitor) {
@@ -94,8 +89,6 @@ func (n *LEndNode) Accept(v Visitor) {
 
 func (n *LSemicolonNode) Accept(v Visitor) {
 	v.VisitLSemicolon(n)
-	n.S.Accept(v)
-	n.L.Accept(v)
 }
 
 func (n *EGeneralNode) Accept(v Visitor) {

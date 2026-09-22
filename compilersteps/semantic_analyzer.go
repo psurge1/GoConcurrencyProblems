@@ -22,18 +22,24 @@ type SemanticAnalyzer struct {
 
 func (v *SemanticAnalyzer) VisitSIf(n *SIfNode) {
 	v.NodeCount += 1
+	n.E.Accept(v)
+	n.S1.Accept(v)
+	n.S2.Accept(v)
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
 
 func (v *SemanticAnalyzer) VisitSBegin(n *SBeginNode) {
 	v.NodeCount += 1
+	n.S.Accept(v)
+	n.L.Accept(v)
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
 
 func (v *SemanticAnalyzer) VisitSPrint(n *SPrintNode) {
 	v.NodeCount += 1
+	n.E.Accept(v)
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
@@ -46,6 +52,8 @@ func (v *SemanticAnalyzer) VisitLEnd(n *LEndNode) {
 
 func (v *SemanticAnalyzer) VisitLSemicolon(n *LSemicolonNode) {
 	v.NodeCount += 1
+	n.S.Accept(v)
+	n.L.Accept(v)
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
