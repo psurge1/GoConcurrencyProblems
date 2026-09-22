@@ -5,7 +5,7 @@ import (
 )
 
 // Visitor is an interface for visiting nodes. It must define a visit function per node.
-// dfs tree traversal is done in the visitor pattern
+// tree traversal is done in the visitor pattern (can decide between preorder, postorder, or a combination of the two)
 type Visitor interface {
 	VisitSIf(*SIfNode)
 	VisitSBegin(*SBeginNode)
