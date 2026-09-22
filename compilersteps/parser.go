@@ -117,25 +117,35 @@ func (rd *RD) E() (ENode, error) {
 }
 
 func TestParser() {
-	tokens := []Token{
+	/*
+		statementOne := []Token{
+			{BEGIN, nil},
+			{IF, nil},
+			{NUM, IntValue(5)},
+			{EQ, nil},
+			{NUM, IntValue(5)},
+			{THEN, nil},
+			{PRINT, nil},
+			{NUM, IntValue(5)},
+			{EQ, nil},
+			{NUM, IntValue(5)},
+			{ELSE, nil},
+			{PRINT, nil},
+			{NUM, IntValue(10)},
+			{EQ, nil},
+			{NUM, IntValue(10)},
+			{END, nil},
+		}
+	*/
+	statementTwo := []Token{
 		{BEGIN, nil},
-		{IF, nil},
-		{NUM, IntValue(5)},
-		{EQ, nil},
-		{NUM, IntValue(5)},
-		{THEN, nil},
 		{PRINT, nil},
-		{NUM, IntValue(5)},
+		{NUM, IntValue(1)},
 		{EQ, nil},
-		{NUM, IntValue(5)},
-		{ELSE, nil},
-		{PRINT, nil},
-		{NUM, IntValue(10)},
-		{EQ, nil},
-		{NUM, IntValue(10)},
+		{NUM, IntValue(1)},
 		{END, nil},
 	}
-	rd := NewRD(tokens)
+	rd := NewRD(statementTwo)
 	tree, err := rd.S()
 
 	if err == nil {
