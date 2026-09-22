@@ -141,6 +141,7 @@ func TestParser() {
 	if err == nil {
 		sem := &SemanticAnalyzer{}
 		tree.Accept(sem)
+		fmt.Printf("Total of %d nodes\n", sem.NodeCount)
 	} else {
 		fmt.Println(err)
 	}
