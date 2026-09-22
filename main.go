@@ -14,9 +14,9 @@ import (
 
 var (
 	pcpRun            = false
-	compilerRun       = false
+	compilerRun       = true
 	matmulRun         = false
-	lamportRun        = true
+	lamportRun        = false
 	ricantAgrawalaRun = false
 	globalSnapshotRun = false
 	leaderElectionRun = false

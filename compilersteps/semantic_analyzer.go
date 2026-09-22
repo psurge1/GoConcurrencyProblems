@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Visitor is an interface for visiting nodes. It must define a visit function per node.
 // dfs tree traversal is done in the visitor pattern
 type Visitor interface {
 	VisitSIf(*SIfNode)
@@ -19,25 +20,16 @@ type SemanticAnalyzer struct {
 }
 
 func (v *SemanticAnalyzer) VisitSIf(n *SIfNode) {
-	n.E.Accept(v)
-	n.S1.Accept(v)
-	n.S2.Accept(v)
-
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
 
 func (v *SemanticAnalyzer) VisitSBegin(n *SBeginNode) {
-	n.S.Accept(v)
-	n.L.Accept(v)
-
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
 
 func (v *SemanticAnalyzer) VisitSPrint(n *SPrintNode) {
-	n.E.Accept(v)
-
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
@@ -48,9 +40,6 @@ func (v *SemanticAnalyzer) VisitLEnd(n *LEndNode) {
 }
 
 func (v *SemanticAnalyzer) VisitLSemicolon(n *LSemicolonNode) {
-	n.S.Accept(v)
-	n.L.Accept(v)
-
 	fmt.Println(NodeString(n))
 	// TODO: Semantic Analysis
 }
